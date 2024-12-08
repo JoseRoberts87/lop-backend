@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 from uuid import UUID, uuid4
 from .shared import Address
 from .asset import Property
@@ -22,6 +23,6 @@ class Account(BaseModel):
     is_active: bool = Field(
         default=True, description="The active status of the account"
     )
-    properties: list[Property] = Field(
+    properties: Optional[list[Property]] = Field(
         default=None, description="List of properties owned by the user"
     )
