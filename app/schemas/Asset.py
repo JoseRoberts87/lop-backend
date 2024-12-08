@@ -1,15 +1,33 @@
-from typing import Dict
-from pydantic import BaseModel, Field, conint
+from typing import Dict, Optional
+from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
 from .shared import Address
 from datetime import datetime
+
+
+class Pictures(BaseModel):
+    picture_id: UUID = uuid4()
+    picture_path: str = Field(..., description="The path to the picture")
+
+
+class MediaCollection(BaseModel):
+    collection_id: UUID = uuid4()
+    pictures: Optional[list[Pictures]] = Field(
+        default=None, description="List of pictures of the property"
+    )
+    videos: Optional[list[str]] = Field(
+        default=None, description="List of videos of the property"
+    )
 
 
 class Property(BaseModel):
     property_id: UUID = uuid4()
     address: Address
     value: float
-    details: dict = Field(
+    media_collection: Optional[MediaCollection] = Field(
+        default=None, description="Media collection of the property"
+    )
+    details: Optional[dict] = Field(
         default=None,
         description="Additional details about the property",
         examples=[
