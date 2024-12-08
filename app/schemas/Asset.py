@@ -1,19 +1,35 @@
+from typing import Dict
 from pydantic import BaseModel, Field, conint
 from uuid import UUID, uuid4
+from .shared import Address
+from datetime import datetime
 
-
-class Address(BaseModel):
-    street: str
-    city: str
-    state: str
-    zipcode: int = Field(..., ge=601, le=99929)
-    country: str = Field(default="USA")
 
 class Property(BaseModel):
-    id: UUID = uuid4()
-    name: str = Field(default=None, description="Common name of property")
+    property_id: UUID = uuid4()
     address: Address
     value: float
+    details: dict = Field(
+        default=None,
+        description="Additional details about the property",
+        examples=[
+            {
+                "bedrooms": 3,
+                "bathrooms": 2,
+                "sqft": 1500,
+                "year_built": 2000,
+                "hoa": 0,
+                "taxes": 2000,
+                "insurance": 1000,
+            }
+        ],
+    )
+
+
+class Campaign(BaseModel):
+    campaign_id: UUID = uuid4()
+    start_date: datetime = Field()
+    end_date: datetime
 
 
 class Asset(BaseModel):
@@ -21,7 +37,25 @@ class Asset(BaseModel):
     designation: str = Field(
         default=None,
         description="The property designation",
-        examples=["Single Family", "Apartment", "Small Office", "Large Office"],
+        examples=[
+            "Single Family",
+            "Multi Family",
+            "Apartment",
+            "Commercial",
+            "Industrial",
+            "Retail",
+            "Office",
+        ],
     )
-    expected_rent: float
+    rent_expected: float = Field(
+        default=None, description="Expected rental income of the asset"
+    )
+    rent_current: float = Field(
+        default=None, description="Current rent of the property"
+    )
     property: Property
+    investor_count: int = Field(..., description="Number of investors in the asset")
+    fractions_total: int = Field(..., description="Total number of fractions")
+    fractions_available: int = Field(..., description="Number of available fractions")
+    fraction_proce: float = Field(..., description="Price per fraction")
+    campaign: Campaign
